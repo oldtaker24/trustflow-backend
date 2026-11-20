@@ -86,11 +86,7 @@ export class AuthController {
   async verify(@Body() verifyDto: VerifyDto): Promise<TokenResponseDto> {
     const valid = await this.authService.verifySignature(verifyDto.address, verifyDto.signature);
     if (!valid) throw new UnauthorizedException('Invalid signature');
-    const refreshToken = await this.authService.generateRefreshToken(verifyDto.address);
-    return {
-      token: this.authService.generateToken(verifyDto.address, 3600),
-      refreshToken,
-    };
+    return this.authService.issueSession(verifyDto.address);
   }
 
   @Post('refresh')
